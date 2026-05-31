@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: devops-learning-api
+    ports:
+      - "8001:8000"
+    environment:
+      ENV: development
+      DEBUG: "True"
+      HOST: 0.0.0.0
+      PORT: 8000
+    volumes:
+      - .:/app
+    command: python -m uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - devops-network
+
+networks:
+  devops-network:
+    driver: bridge
